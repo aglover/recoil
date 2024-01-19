@@ -34,6 +34,7 @@ services:
       - POSTGRESQL_DATABASE=hoodoo
       - PGBOUNCER_DATABASE=hoodoo
       - PGBOUNCER_AUTH_TYPE=scram-sha-256
+      - PGBOUNCER_POOL_MODE=transaction
     depends_on:
       - postgres-primary
 
