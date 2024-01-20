@@ -1,9 +1,9 @@
-# Recoil
+# Recoil and bounce!
 
 <img src="img/logo.png" align="right"
      alt="Recoil logo" width="150" height="150">
 
-Recoil enables you to play with everybody's favorite Postgres connection pooler and router [PgBouncer](https://www.pgbouncer.org/). Plus, you can do it from the comfort of your laptop! The enclosed Docker compose file will spin up two Postgres instances - a primary and a read replica. Neither instance has an exposed port. A third service is additionally spun up, which is unsurprisingly, PgBouncer. This service exposes one port and two database names, thus acting like a router. PgBouncer is also configured to have up to 200 client connections. 
+Recoil enables you to play with everybody's favorite Postgres connection pooler and router [PgBouncer](https://www.pgbouncer.org/). Plus, you can do it from the comfort of your laptop! The enclosed Docker compose file will spin up two Postgres instances - a primary and a read replica. A third service is additionally spun up, which is unsurprisingly, PgBouncer. This service exposes one port and two database names, thus acting like a router. PgBouncer is also configured to have up to 200 client connections. 
 
 ## What is PgBouncer? 
 
@@ -73,4 +73,5 @@ PgBouncer is a lightweight connection pooler and router for PostgreSQL. It acts 
 
 ## What's all this mean?
 
-In essence, PgBouncer is acting like both a connection pool (with 200 connections) and a router. Conceptually, it's like a load balancer. 
+In essence, PgBouncer is acting like both a connection pool (with 200 connections) and a router. Conceptually, it's like a load balancer. Keen observers will note that the primary has a backdoor via port `49149`. It's with this port that I can demonstrate PgBouncer's other handy feature: connection pools. 
+
