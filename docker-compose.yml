@@ -1,14 +1,16 @@
   # 1/16/24
-  #
 name: recoil-and-bounce
 services:
+  # Primary postgres instance with a database named recoil 
+  # note that upon startup, the recoil database is seeded with
+  # an employee database containing a healthy amount of data.
   postgres-primary:
     image: bitnami/postgresql:15
     environment:
       - POSTGRES_PASSWORD=recoil
-      # - POSTGRESQL_REPLICATION_MODE=master  
-      # - POSTGRESQL_REPLICATION_USER=repl_user
-      # - POSTGRESQL_REPLICATION_PASSWORD=repl_user
+      - POSTGRESQL_REPLICATION_MODE=master  
+      - POSTGRESQL_REPLICATION_USER=repl_user
+      - POSTGRESQL_REPLICATION_PASSWORD=repl_user
       - POSTGRESQL_DATABASE=recoil
       - POSTGRESQL_EXTRA_FLAGS=-c wal_level=logical -c max_wal_size=4GB -c min_wal_size=1GB
     healthcheck:
@@ -19,13 +21,37 @@ services:
     volumes:
       - postgres:/var/lib/postgresql/data-recoil
       - ./employees_data.sql:/docker-entrypoint-initdb.d/init.sql
-  
+  # Read Replica 
+  # note that no port is exposed so it'll only be available via 
+  # pgbouncer via a named database (recoil-ro)
+  postgres-replica:
+    image: bitnami/postgresql:15
+    restart: always
+    depends_on:
+      postgres-primary:
+        condition: service_healthy
+    healthcheck:
+      test: pg_isready -U postgres
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    environment:
+      - POSTGRES_PASSWORD=recoil
+      - POSTGRESQL_MASTER_HOST=postgres-primary
+      - POSTGRESQL_MASTER_PORT_NUMBER=5432
+      - POSTGRESQL_REPLICATION_MODE=slave
+      - POSTGRESQL_REPLICATION_USER=repl_user
+      - POSTGRESQL_REPLICATION_PASSWORD=repl_user
+    volumes:
+      - postgres-replica:/var/lib/postgresql/data-recoil-rr
+  # pgbouncer is configured to route to
+  # the primary and its read replica via names - not ports 
   pgbouncer:
     image: docker.io/bitnami/pgbouncer:1
     ports:
       - "5432:6432"
     environment:
-    # Note that typical pgboucer environmental variables are 
+    # Note that typical pgbouncer environmental variables are 
     # supported by adding a PGBOUNCER prefix
       - POSTGRESQL_HOST=postgres-primary
       - POSTGRESQL_PASSWORD=recoil
@@ -34,46 +60,9 @@ services:
       - PGBOUNCER_AUTH_TYPE=scram-sha-256
       - PGBOUNCER_POOL_MODE=transaction
       - PGBOUNCER_MAX_CLIENT_CONN=200
+      - PGBOUNCER_DSN_0=recoil-ro=host=postgres-replica port=5432 dbname=recoil
     depends_on:
       - postgres-primary
-
-  # pgbouncer:
-  #   image: edoburu/pgbouncer
-  #   environment:
-  #     - DB_USER=postgres
-  #     - DB_PASSWORD=hoodoo
-  #     - DB_HOST=postgres-primary
-  #     - DB_NAME=hoodoo
-  #     - POOL_MODE=transaction
-  #     - ADMIN_USERS=postgres
-  #     - AUTH_TYPE=scram-sha-256
-  #     - MAX_CLIENT_CONN=200
-  #   ports:
-  #     - "5432:5432"
-  #   depends_on:
-  #     - postgres-primary
-  # postgres-replica:
-  #   image: bitnami/postgresql:15
-  #   restart: always
-  #   ports:
-  #     - "5434:5432"
-  #   depends_on:
-  #     postgres-primary:
-  #       condition: service_healthy
-  #   healthcheck:
-  #     test: pg_isready -U postgres
-  #     interval: 5s
-  #     timeout: 5s
-  #     retries: 5
-  #   environment:
-  #     - POSTGRES_PASSWORD=hoodoo
-  #     - POSTGRESQL_MASTER_HOST=postgres-primary
-  #     - POSTGRESQL_REPLICATION_MODE=slave
-  #     - POSTGRESQL_REPLICATION_USER=repl_user
-  #     - POSTGRESQL_REPLICATION_PASSWORD=repl_user
-  #     - POSTGRESQL_MASTER_PORT_NUMBER=5432
-  #   volumes:
-  #     - postgres-replica:/var/lib/postgresql/data-hoodoo
 volumes:
   postgres: ~
-  # postgres-replica: ~
+  postgres-replica: ~
