@@ -3,7 +3,7 @@
 <img src="img/logo.png" align="right"
      alt="Recoil logo" width="150" height="150">
 
-Recoil enables you to play with everybody's favorite Postgres connection pooler and router [PgBouncer](https://www.pgbouncer.org/). Plus, you can do it from the comfort of your laptop! The enclosed Docker compose file will spin up two Postgres instances - a primary and a read replica. A third service is additionally spun up, which is unsurprisingly, PgBouncer. This service exposes one port and two database names, thus acting like a router. PgBouncer is also configured to have up to 200 client connections. 
+Recoil enables you to play with everybody's favorite Postgres connection pooler and router [PgBouncer](https://www.pgbouncer.org/). Plus, you can do it from the comfort of your laptop! The enclosed Docker compose file will spin up two Postgres instances - a primary and a read replica. A third service is additionally spun up, which is unsurprisingly, PgBouncer. This service exposes one port and two database names, thus acting like a router. PgBouncer is also configured to have up to 200 client connections and the below directions will demonstrate PgBouncer's impressive connection pooling abilities.  
 
 ## What is PgBouncer? 
 
@@ -77,7 +77,7 @@ In essence, PgBouncer is acting like a proxy or and a router. In fact, conceptua
 
  Connections in Postgres are expensive because Postgres creates a new backend process for each connection, which involves memory allocation and initialization tasks. A connection pooler manages a set of connections on behalf of a service like a database thereby freeing up the service's resources to focus on other aspects, such as rapidly returning data. 
  
- To See how PgBouncer works as a connection pool, the following directions use [pgbench](https://www.postgresql.org/docs/current/pgbench.html), which is a simple command line utility to run benchmark tests on a Postgres instance. It's an easy way to exhaust database resources, which you'll do. Subsequently, you'll point pgbench at PgBouncer and see an improvement. 
+ To See how PgBouncer works as a connection pool, the following directions use [pgbench](https://www.postgresql.org/docs/current/pgbench.html), which is a simple command line utility to run benchmark tests on a Postgres instance. It's an easy way to exhaust database resources, which you'll do. Subsequently, you'll point `pgbench` at PgBouncer and see an improvement. 
  
  Before you start these directions, ensure no previous instances of Recoil's containers are running. Simply issue a `docker compose down` in the `recoil` directory if so. You'll be using the `pgbench` command line utility, so ensure that's in your path (i.e. make sure `pgbench --help` works). 
 
