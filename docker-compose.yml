@@ -6,8 +6,11 @@ services:
   # an employee database containing a healthy amount of data.
   postgres-primary:
     image: bitnami/postgresql:15
-    ports:
-      - "49149:5432"
+    # Uncomment the following two lines if you want backdoor access
+    # to the primary - follow the directions in the README to see connection 
+    # pooling in action, for example.
+    # ports:
+    #   - "49149:5432"
     environment:
       - POSTGRES_PASSWORD=recoil
       - POSTGRESQL_REPLICATION_MODE=master  
