@@ -165,8 +165,8 @@ As you can see, by configuring PgBouncer with 200 connections and putting it in 
 
  With a connection pooler like PgBouncer, you get benefits like:
  
-  * Improved performance: By reusing connections, PgBouncer can significantly reduce the time it takes for your application to connect to the database. This can lead to faster loading times and improved responsiveness.
-  * Reduced load on the database server: By managing a pool of connections, PgBouncer can help to prevent your application from overloading the database server with too many connections. This can be especially important for applications with a high number of users.
+  * Improved performance: by reusing connections, PgBouncer can significantly reduce the time it takes for your application to connect to a database. This can lead to faster loading times and improved responsiveness.
+  * Reduced load on the database server: by managing a pool of connections, PgBouncer can help to prevent your application from overloading the database server with too many connections. This can be especially important for applications with a high number of users.
   * Increased stability: PgBouncer can help to prevent your application from crashing if the database server becomes unavailable. This is because PgBouncer can retry failed connections and can also gracefully handle situations where the database server is overloaded.
   * Improved security: PgBouncer can help to improve the security of your application by providing features such as connection limiting and user authentication.
 
